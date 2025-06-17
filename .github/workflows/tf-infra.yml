@@ -1,4 +1,4 @@
-name: infra-audit-report-app
+name: infra-k8s-in-action
 on:
   workflow_dispatch: 
 #   push:
