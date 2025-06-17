@@ -49,7 +49,7 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
       
-      # - name: Terraform apply
-      #   id: apply
-      #   working-directory: tf-src/envs/dev/
-      #   run: terraform apply -auto-approve -input=false -parallelism=1 planfile  # build resources 1 at a time 
+      - name: Terraform apply
+        id: apply
+        working-directory: tf-src/envs/dev/
+        run: terraform apply -auto-approve -input=false -parallelism=1 planfile  # build resources 1 at a time 
