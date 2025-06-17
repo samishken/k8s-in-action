@@ -1,4 +1,4 @@
-name: 'EKS Cluster Deletion'
+name: 'Terraform Destroy Infra'
 
 on:
   workflow_dispatch:
