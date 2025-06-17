@@ -28,7 +28,7 @@ jobs:
         run: |
           terraform init \
             -backend-config "bucket=terraform-state-dev-samboo" \
-            -backend-config "key=dev/audit-report-app/terraform-audit-report-app.tfstate"
+            -backend-config "key=dev/k8s-in-action/tfstate-k8s-in-action-app.tfstate"
       
       - name: Terraform Format
         working-directory: tf-src/envs/dev/
