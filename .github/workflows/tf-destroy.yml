@@ -36,9 +36,9 @@ jobs:
       - name: Write tfvars file for selected environment
         run: |
           if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
-            printf '%s' "${{ secrets.DEV_TFVARS }}" > dev.tfvars
+            printf '%s' '${{ secrets.DEV_TFVARS }}' > dev.tfvars
           elif [ "${{ github.event.inputs.environment }}" = "prod" ]; then
-            printf '%s' "${{ secrets.PROD_TFVARS }}" > prod.tfvars
+            printf '%s' '${{ secrets.PROD_TFVARS }}' > prod.tfvars
           fi
           ls -ltr
       - name: Terraform Destroy
