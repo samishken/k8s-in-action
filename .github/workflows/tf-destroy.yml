@@ -1,41 +1,37 @@
-name: 'Terraform Destroy Infra'
+name: Terraform Destroy
 
 on:
   workflow_dispatch:
-
-permissions:
-  contents: read
+    inputs:
+      environment:
+        description: 'Terraform environment (dev, staging, prod)'
+        required: true
+        default: 'dev'
 
 jobs:
   terraform:
-    name: 'Terraform'
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        shell: bash
+        working-directory: tf-src/envs/${{ github.event.inputs.environment }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ vars.AWS_REGION }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Terraform Init
-      working-directory: tf-src/envs/dev/
-      run: |
-        terraform init \
-        -backend-config "bucket=terraform-state-dev-samboo" \
-        -backend-config "key=dev/k8s-in-action/tfstate-k8s-in-action-app.tfstate"    
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
     
-    - name: Terraform Destroy
-      working-directory: tf-src/envs/dev/
-      run: terraform destroy --auto-approve
+      - name: Terraform Destroy
+        run: terraform destroy --auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars"
