@@ -1,7 +1,7 @@
 resource "aws_security_group" "dev_audit_report_app_sg" {
-  name        = "${local.environment}-${local.project_name}-sg"
+  name        = "${var.env}-${local.project_name}-sg"
   description = "allow-ssh"
-  vpc_id      = module.dev-k8s-in-action-vpc.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   egress {
     from_port        = 0
@@ -18,8 +18,8 @@ resource "aws_security_group" "dev_audit_report_app_sg" {
   }
   tags = {
     Terraform   = "true"
-    Name        = "${local.environment}-${local.project_name}-sg"
+    Name        = "${var.env}-${local.project_name}-sg"
     Project     = "${local.project_name}"
-    Environment = "${local.environment}"
+    Environment = "${var.env}"
   }
 }

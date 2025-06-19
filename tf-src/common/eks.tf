@@ -1,17 +1,17 @@
-module "k8s-in-action-eks" {
-  source = "../../modules/eks"
+module "eks" {
+  source = "../modules/eks"
 
-  cluster_name    = "${local.environment}-${local.project_name}-eks"
+  cluster_name    = "${var.env}-${local.project_name}-eks"
   cluster_version = var.cluster_version
-  vpc_id          = module.dev-k8s-in-action-vpc.vpc_id
-  subnet_ids      = module.dev-k8s-in-action-vpc.private_subnet_ids
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnet_ids
   node_groups     = var.node_groups
 
   tags = {
     Terraform   = "true"
-    Name        = "${local.environment}-${local.project_name}-eks-cluster"
+    Name        = "${var.env}-${local.project_name}-eks-cluster"
     Project     = "${local.project_name}"
-    Environment = "${local.environment}"
+    Environment = "${var.env}"
   }
 }
 

@@ -1,11 +1,12 @@
-locals {
-  project_name = "dev-k8s-in-action" # Change to your project name 
-}
 
+locals {
+  project_name = "prod-k8s-in-action" # Change to your project name 
+}
 
 locals {
   module_path = "${path.module}/../../modules/vpc"
 }
+
 module "common" {
   source = "../../common"
 
