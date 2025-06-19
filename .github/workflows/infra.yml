@@ -7,6 +7,10 @@ on:
         description: 'Terraform environment (dev, staging, prod)'
         required: true
         default: 'dev'
+        
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   terraform:
