@@ -30,3 +30,7 @@ variable "env" {
   description = "Environment (e.g., dev, prod)"
   type        = string
 }
+
+
+# variable "desired_size" {}
+# varialbel "max_size" {}

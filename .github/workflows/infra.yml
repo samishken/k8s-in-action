@@ -42,7 +42,7 @@ jobs:
       - name: Write tfvars file
         run: |
           ls -lts
-          echo "${{ secrets.DEV_TFVARS }}" > dev.tfvars
+          echo '${{ secrets.DEV_TFVARS }}' > dev.tfvars
           ls -ltr
           cat dev.tfvars
       - name: Terraform Plan
