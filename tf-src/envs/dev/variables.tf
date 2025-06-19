@@ -15,18 +15,18 @@ variable "azs" {
   default = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
-# variable "cluster_name" {
-#   description = "Name of the EKS cluster"
-#   type        = string
-# }
+variable "cluster_name" {
+  description = "Name of the EKS cluster"
+  type        = string
+}
 
-# variable "state_bucket" {
-#   description = "S3 bucket for Terraform state"
-#   type        = string
+variable "state_bucket" {
+  description = "S3 bucket for Terraform state"
+  type        = string
 
-# }
+}
 
-# variable "env" {
-#   description = "Environment (e.g., dev, prod)"
-#   type        = string
-# }
+variable "env" {
+  description = "Environment (e.g., dev, prod)"
+  type        = string
+}
