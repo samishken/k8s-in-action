@@ -39,11 +39,6 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -check
 
-      # - name: Write tfvars file
-      #   run: |
-      #     echo '${{ secrets.DEV_TFVARS }}' > dev.tfvars
-      #     echo '${{ secrets.PROD_TFVARS }}' > prod.tfvars
-
       - name: Write tfvars file for selected environment
         run: |
           if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
