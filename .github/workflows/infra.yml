@@ -41,8 +41,10 @@ jobs:
 
       - name: Write tfvars file
         run: |
+          ls -lts
           echo "${{ secrets.DEV_TFVARS }}" > dev.tfvars
           ls -ltr
+          cat dev.tfvars
       - name: Terraform Plan
         run: terraform plan -var-file="${{ github.event.inputs.environment }}.tfvars"
 
