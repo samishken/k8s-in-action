@@ -1,3 +1,21 @@
 TODO
+- DONE: tfvars  `terraform plan -var-files="dev.tfvars"`
+- Helm
+- Troubleshooting
+- - - - What do we do in case we need to roll back?
+- - - - Pods failures
 - certificate manager / tls / istio
-- helm
+- Networking: VPC CNI, eni
+- Security: OIDC, IAM Role, Service Account
+- Secrets & configmaps: secrets manager, HashiCorp Vault
+- Ingress controller vs Ingress
+- - - - including Load Balancers. Ex. Nginx/HAProxy and AWS ALB/NLB   
+- Cluster Autoscaler - for eks worker nodes autoscaling
+- Horizontal pod autoscaler (hps) for pod autoscaling
+- Probes: readiness, lieveness, startup
+- Backups: velero
+- Logging (elk), Monitoring and observability (datadog, prometheus, grafana) 
+- Kustomize - for manifest files. Read about it.
+- "Resource Optimization & cost control" - 
+- - - - Resource Optimization tool -> Sosivio
+- - - - Cost control tool -> Cast AI

@@ -1,7 +1,7 @@
 # VPC Module
 
 ### Resources to be created
-- 1 VPC 
+- 1 VPC
 - 6 subnets, 3 private and 3 public
 - 1 Internet Gateway: public subnet can have access to Internet
 - `private Route tables` determine where network traffic from subnets is directed, typically within the VPC itself or to other private resources.
