@@ -7,6 +7,16 @@ on:
     # pull_request:
     #     branches:
     #     - main
+      inputs:
+        environment:
+          description: 'Terraform environment (dev, staging, prod)'
+          required: true
+          default: 'dev'
+
+# Required for OIDC authentication
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
     build:
@@ -52,37 +62,45 @@ jobs:
             working-directory: app/src/product-catalog
 
 
-    # docker-deploy:
-    #     runs-on: ubuntu-latest
-    #     needs: [build, code-quality] 
-    #     env:
-    #         ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}  
-    #         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-    #         IMAGE_TAG: ${{ github.sha }}
+    docker-deploy:
+        runs-on: ubuntu-latest
+        needs: [build, code-quality] 
 
-    #     steps:
-    #         - name: Checkout code
-    #           uses: actions/checkout@v4
 
-    #         - name: Configure AWS credentials
-    #           uses: aws-actions/configure-aws-credentials@v4
-    #           with:
-    #             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #             aws-region: us-east-1
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-    #         - name: Login to Amazon ECR
-    #           id: login-ecr
-    #           uses: aws-actions/amazon-ecr-login@v2
+            # Authenticate with AWS using OIDC
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+                aws-region: ${{ vars.AWS_REGION }}
+            
+            # Login to Amazon ECR
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
 
-    #         - name: Build Docker image
-    #           working-directory: app/
-    #           run: |
-    #              docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-
-    #         - name: Push Docker image to ECR
-    #           run: |
-    #             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            
+            - name: Build, tag, and push docker image to Amazon ECR
+              env:
+                REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                IMAGE_TAG: ${{ github.sha }}
+                ECR_REPOSITORY_DEV: ${{ secrets.ECR_REPOSITORY_DEV }}
+                ECR_REPOSITORY_PROD: ${{ secrets.ECR_REPOSITORY_PROD }}
+                ECR_REPOSITORY_STAGING: ${{ secrets.ECR_REPOSITORY_STAGING }}
+              run: |
+                if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
+                  REPOSITORY="$ECR_REPOSITORY_DEV"
+                elif [ "${{ github.event.inputs.environment }}" = "prod" ]; then
+                  REPOSITORY="$ECR_REPOSITORY_PROD"
+                else
+                  REPOSITORY="$ECR_REPOSITORY_STAGING"
+                fi
+                docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
 
     

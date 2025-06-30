@@ -25,6 +25,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      
+      # Authenticate with AWS using OIDC
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
