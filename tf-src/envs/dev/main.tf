@@ -9,11 +9,11 @@ locals {
 module "common" {
   source = "../../common"
 
-  cluster_name = var.cluster_name
-  vpc_cidr     = var.vpc_cidr
-  azs          = var.azs
-  state_bucket = var.state_bucket
-  env          = var.env
+  cluster_name                 = var.cluster_name
+  vpc_cidr                     = var.vpc_cidr
+  azs                          = var.azs
+  state_bucket                 = var.state_bucket
+  env                          = var.env
   github_actions_oidc_role_arn = var.github_actions_oidc_role_arn
   node_groups = {
     k8s-in-action-ng = {
