@@ -117,17 +117,21 @@ jobs:
 
           - name: Update tag in kubernetes deployment manifest
             env:
-              REGISTRY: ${{ needs.docker-deploy.outputs.repository }}
+              ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+              REPOSITORY: ${{ needs.docker-deploy.outputs.repository }}
               IMAGE_TAG: ${{ github.sha }}
             run: |
-              sed -i "s|image: .*|image: $REGISTRY:$IMAGE_TAG|" app/kubernetes/productcatalog/deploy.yaml
-
+              sed -i "s|image: .*|image: $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG|" app/kubernetes/productcatalog/deploy.yaml
+            
+          ## `${GITHUB_REF_NAME}` is a [GitHub Actions default environment variable](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables) 
+          ## that contains the **branch or tag name** that triggered the workflow, **without the refs/heads/** or **refs/tags/** prefix.
           - name: Commit and push changes
             run: |
               git config --global user.email "samishken@gmail.com"
               git config --global user.name "samishken"
               git add app/kubernetes/productcatalog/deploy.yaml
               git commit -m "[CI]: Update product catalog image tag"
-              git push origin HEAD:main -f
+              git push origin HEAD:${GITHUB_REF_NAME} -f
+
 
 
