@@ -67,6 +67,7 @@ jobs:
         needs: [build, code-quality]
         outputs:
           repository: ${{ steps.set-repo.outputs.repository }}
+          registry: ${{ steps.set-registry.outputs.registry }}
         steps:
           - name: Checkout code
             uses: actions/checkout@v4
@@ -93,6 +94,10 @@ jobs:
               else
                 echo "repository=${{ secrets.ECR_REPOSITORY_STAGING }}" >> $GITHUB_OUTPUT
               fi
+
+          - name: Set registry output
+            id: set-registry
+            run: echo "registry=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_OUTPUT
 
           - name: Build, tag, and push docker image to Amazon ECR
             working-directory: app/src/product-catalog
