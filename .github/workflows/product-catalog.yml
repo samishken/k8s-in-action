@@ -64,81 +64,70 @@ jobs:
 
     docker-deploy:
         runs-on: ubuntu-latest
-        needs: [build, code-quality] 
-
-
+        needs: [build, code-quality]
+        outputs:
+          repository: ${{ steps.set-repo.outputs.repository }}
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+          - name: Checkout code
+            uses: actions/checkout@v4
 
-            # Authenticate with AWS using OIDC
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
-                aws-region: ${{ vars.AWS_REGION }}
-            
-            # Login to Amazon ECR
-            - name: Login to Amazon ECR
-              id: login-ecr
-              uses: aws-actions/amazon-ecr-login@v2
+          # Authenticate with AWS using OIDC
+          - name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+              role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+              aws-region: ${{ vars.AWS_REGION }}
+          
+          # Login to Amazon ECR
+          - name: Login to Amazon ECR
+            id: login-ecr
+            uses: aws-actions/amazon-ecr-login@v2
 
-            
-            - name: Build, tag, and push docker image to Amazon ECR
-              working-directory: app/src/product-catalog
-              env:
-                REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-                IMAGE_TAG: ${{ github.sha }}
-                ECR_REPOSITORY_DEV: ${{ secrets.ECR_REPOSITORY_DEV }}
-                ECR_REPOSITORY_PROD: ${{ secrets.ECR_REPOSITORY_PROD }}
-                ECR_REPOSITORY_STAGING: ${{ secrets.ECR_REPOSITORY_STAGING }}
-              run: |
-                if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
-                  REPOSITORY="$ECR_REPOSITORY_DEV"
-                elif [ "${{ github.event.inputs.environment }}" = "prod" ]; then
-                  REPOSITORY="$ECR_REPOSITORY_PROD"
-                else
-                  REPOSITORY="$ECR_REPOSITORY_STAGING"
-                fi
-                docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-                docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          - name: Set repository name
+            id: set-repo
+            run: |
+              if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
+                echo "repository=${{ secrets.ECR_REPOSITORY_DEV }}" >> $GITHUB_OUTPUT
+              elif [ "${{ github.event.inputs.environment }}" = "prod" ]; then
+                echo "repository=${{ secrets.ECR_REPOSITORY_PROD }}" >> $GITHUB_OUTPUT
+              else
+                echo "repository=${{ secrets.ECR_REPOSITORY_STAGING }}" >> $GITHUB_OUTPUT
+              fi
+
+          - name: Build, tag, and push docker image to Amazon ECR
+            working-directory: app/src/product-catalog
+            env:
+              REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+              IMAGE_TAG: ${{ github.sha }}
+              REPOSITORY: ${{ steps.set-repo.outputs.repository }}
+            run: |
+              docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+              docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
 
     
     updatek8s:
         runs-on: ubuntu-latest
-
         needs: docker-deploy
-
         steps:
-        - name: checkout code
-          uses: actions/checkout@v4
-          with:
-            token: ${{ secrets.REPO_TOKEN }}
+          - name: checkout code
+            uses: actions/checkout@v4
+            with:
+              token: ${{ secrets.REPO_TOKEN }}
 
-        - name: Update tag in kubernetes deployment manifest
-          env:
-            REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-            IMAGE_TAG: ${{ github.sha }}
-            ECR_REPOSITORY_DEV: ${{ secrets.ECR_REPOSITORY_DEV }}
-            ECR_REPOSITORY_PROD: ${{ secrets.ECR_REPOSITORY_PROD }}
-            ECR_REPOSITORY_STAGING: ${{ secrets.ECR_REPOSITORY_STAGING }}
-          run: |
-            if [ "${{ github.event.inputs.environment }}" = "dev" ]; then
-              REPOSITORY="$ECR_REPOSITORY_DEV"
-            elif [ "${{ github.event.inputs.environment }}" = "prod" ]; then
-              REPOSITORY="$ECR_REPOSITORY_PROD"
-            else
-              REPOSITORY="$ECR_REPOSITORY_STAGING"
-            fi
-            sed -i "s|image: .*|image: $REGISTRY/$REPOSITORY:$IMAGE_TAG|" app/kubernetes/productcatalog/deploy.yaml
-        
-        - name: Commit and push changes
-          run: |
-            git config --global user.email "samishken@gmail.com"
-            git config --global user.name "samishken"
-            git add app/kubernetes/productcatalog/deploy.yaml
-            git commit -m "[CI]: Update product catalog image tag"
-            git push origin HEAD:main -f
+          - name: Update tag in kubernetes deployment manifest
+            env:
+              REGISTRY: ${{ needs.docker-deploy.outputs.repository }}
+              IMAGE_TAG: ${{ github.sha }}
+            run: |
+              sed -i "s|image: .*|image: $REGISTRY:$IMAGE_TAG|" app/kubernetes/productcatalog/deploy.yaml
+
+          - name: Commit and push changes
+            run: |
+              git config --global user.email "samishken@gmail.com"
+              git config --global user.name "samishken"
+              git add app/kubernetes/productcatalog/deploy.yaml
+              git commit -m "[CI]: Update product catalog image tag"
+              git push origin HEAD:main -f
 
 
