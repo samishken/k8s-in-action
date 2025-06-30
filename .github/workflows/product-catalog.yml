@@ -40,7 +40,7 @@ jobs:
         - name: unit tests
           run: |
             cd app/src/product-catalog
-            go app/test ./...
+            go test ./...
     
     code-quality:
         runs-on: ubuntu-latest
@@ -128,5 +128,4 @@ jobs:
     #         git commit -m "[CI]: Update product catalog image tag"
     #         git push origin HEAD:main -f
 
-        
-     
+
