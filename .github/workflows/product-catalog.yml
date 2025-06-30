@@ -67,6 +67,7 @@ jobs:
         needs: [build, code-quality]
         outputs:
           repository: ${{ steps.set-repo.outputs.repository }}
+          registry: ${{ steps.set-registry.outputs.registry }}
         steps:
           - name: Checkout code
             uses: actions/checkout@v4
@@ -94,6 +95,10 @@ jobs:
                 echo "repository=${{ secrets.ECR_REPOSITORY_STAGING }}" >> $GITHUB_OUTPUT
               fi
 
+          - name: Set registry output
+            id: set-registry
+            run: echo "registry=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_OUTPUT
+
           - name: Build, tag, and push docker image to Amazon ECR
             working-directory: app/src/product-catalog
             env:
@@ -117,17 +122,21 @@ jobs:
 
           - name: Update tag in kubernetes deployment manifest
             env:
-              REGISTRY: ${{ needs.docker-deploy.outputs.repository }}
+              ECR_REGISTRY: ${{ needs.docker-deploy.outputs.registry }}
+              REPOSITORY: ${{ needs.docker-deploy.outputs.repository }}
               IMAGE_TAG: ${{ github.sha }}
             run: |
-              sed -i "s|image: .*|image: $REGISTRY:$IMAGE_TAG|" app/kubernetes/productcatalog/deploy.yaml
-
+              sed -i "s|image: .*|image: $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG|" app/kubernetes/productcatalog/deploy.yaml
+            
+          ## `${GITHUB_REF_NAME}` is a [GitHub Actions default environment variable](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables) 
+          ## that contains the **branch or tag name** that triggered the workflow, **without the refs/heads/** or **refs/tags/** prefix.
           - name: Commit and push changes
             run: |
               git config --global user.email "samishken@gmail.com"
               git config --global user.name "samishken"
               git add app/kubernetes/productcatalog/deploy.yaml
               git commit -m "[CI]: Update product catalog image tag"
-              git push origin HEAD:main -f
+              git push origin HEAD:${GITHUB_REF_NAME} -f
+
 
 
