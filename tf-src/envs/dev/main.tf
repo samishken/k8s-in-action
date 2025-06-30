@@ -14,4 +14,20 @@ module "common" {
   azs          = var.azs
   state_bucket = var.state_bucket
   env          = var.env
+  github_actions_oidc_role_arn = var.github_actions_oidc_role_arn
+  node_groups = {
+    k8s-in-action-ng = {
+      instance_types = ["t3.large"]
+      capacity_type  = "ON_DEMAND"
+      scaling_config = {
+        desired_size = 3
+        max_size     = 4
+        min_size     = 1
+      }
+      node_tags = {
+        Name        = "${var.env}-${local.project_name}-node"
+        Environment = "${var.env}"
+      }
+    }
+  }
 }

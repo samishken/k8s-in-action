@@ -66,3 +66,8 @@ variable "public_subnets_cidrs" {
 variable "azs" {
   default = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
+
+variable "github_actions_oidc_role_arn" {
+  description = "ARN of the GitHub Actions OIDC IAM role"
+  type        = string
+}

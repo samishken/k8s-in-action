@@ -13,6 +13,14 @@ module "eks" {
     Project     = "${local.project_name}"
     Environment = "${var.env}"
   }
+
+  map_roles = [
+    {
+      rolearn  = var.github_actions_oidc_role_arn
+      username = "github-actions"
+      groups   = ["system:masters"]
+    }
+  ]
 }
 
 
@@ -42,6 +50,7 @@ variable "node_groups" {
         max_size     = 4
         min_size     = 1
       }
+      node_tags = {}
     }
   }
 }
