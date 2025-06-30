@@ -85,6 +85,7 @@ jobs:
 
             
             - name: Build, tag, and push docker image to Amazon ECR
+              working-directory: app/src/product-catalog
               env:
                 REGISTRY: ${{ steps.login-ecr.outputs.registry }}
                 IMAGE_TAG: ${{ github.sha }}
