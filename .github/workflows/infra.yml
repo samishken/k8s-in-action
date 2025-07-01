@@ -64,6 +64,7 @@ jobs:
             -var="userarn=$USERARN"
 
       - name: Terraform Apply
+        if: github.event_name == 'workflow_dispatch'
         env:
           GITHUB_ACTIONS_OIDC_ROLE_ARN: ${{ secrets.ACTIONS_OIDC_ROLE_ARN }}
           USERARN: ${{ secrets.USERARN }}
