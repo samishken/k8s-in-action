@@ -59,4 +59,4 @@ jobs:
 
       - name: Terraform Apply
         if: github.event_name == 'workflow_dispatch'
-        run: terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars"
+        run: terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" -var-file="${{ github.event.inputs.environment }}.tfvars"
