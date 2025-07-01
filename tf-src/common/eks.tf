@@ -21,6 +21,8 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
+
+  github_actions_oidc_role_arn = var.github_actions_oidc_role_arn
 }
 
 
