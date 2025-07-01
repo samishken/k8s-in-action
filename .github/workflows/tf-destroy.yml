@@ -45,6 +45,11 @@ jobs:
           fi
           ls -ltr
       - name: Terraform Destroy
-        run: terraform destroy --auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" \
+        env:
+          GITHUB_ACTIONS_OIDC_ROLE_ARN: ${{ secrets.ACTIONS_OIDC_ROLE_ARN }}
+          USERARN: ${{ secrets.USERARN }}
+        run: |
+          terraform destroy -auto-approve \
+            -var-file="${{ github.event.inputs.environment }}.tfvars" \
             -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN" \
             -var="userarn=$USERARN"
