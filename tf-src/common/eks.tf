@@ -16,7 +16,7 @@ module "eks" {
 
   map_roles = [
     {
-      rolearn  = var.github_actions_oidc_role_arn
+      userarn  = "arn:aws:iam::225989363866:user/devops-infra"
       username = "github-actions"
       groups   = ["system:masters"]
     }
