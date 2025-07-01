@@ -57,11 +57,17 @@ jobs:
       - name: Terraform Plan
         env:
           GITHUB_ACTIONS_OIDC_ROLE_ARN: ${{ secrets.ACTIONS_OIDC_ROLE_ARN }}
+          USERARN: ${{ secrets.USERARN }}
         run: |
-          terraform plan -var-file="${{ github.event.inputs.environment }}.tfvars" -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN"
+          terraform plan -var-file="${{ github.event.inputs.environment }}.tfvars" \
+            -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN" \
+            -var="userarn=$USERARN"
 
       - name: Terraform Apply
         env:
           GITHUB_ACTIONS_OIDC_ROLE_ARN: ${{ secrets.ACTIONS_OIDC_ROLE_ARN }}
+          USERARN: ${{ secrets.USERARN }}
         run: |
-          terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN"
+          terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" \
+            -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN" \
+            -var="userarn=$USERARN"
