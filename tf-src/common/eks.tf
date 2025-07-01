@@ -29,7 +29,7 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
-  userarn = var.userarn
+  userarn                      = var.userarn
   github_actions_oidc_role_arn = var.github_actions_oidc_role_arn
 }
 

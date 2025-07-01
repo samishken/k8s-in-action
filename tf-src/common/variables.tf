@@ -79,7 +79,7 @@ variable "userarn" {
 
 variable "map_users" {
   description = "List of IAM users to add to aws-auth configmap"
-  type        = list(object({
+  type = list(object({
     userarn  = string
     username = string
     groups   = list(string)
