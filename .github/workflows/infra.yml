@@ -72,3 +72,5 @@ jobs:
           terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" \
             -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN" \
             -var="userarn=$USERARN"
+        
+      
