@@ -31,6 +31,9 @@ variable "env" {
   type        = string
 }
 
-
+variable "github_actions_oidc_role_arn" {
+  description = "ARN of the GitHub Actions OIDC IAM role"
+  type        = string
+}
 # variable "desired_size" {}
 # varialbel "max_size" {}

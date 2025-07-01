@@ -28,7 +28,13 @@ variable "node_groups" {
       max_size     = number
       min_size     = number
     })
-  }))
+  })) 
 }
 
 variable "tags" { type = map(string) }
+
+variable "map_roles" {
+  description = "List of IAM roles to add to aws-auth configmap"
+  type        = list(any)
+  default     = []
+}
