@@ -35,5 +35,12 @@ variable "github_actions_oidc_role_arn" {
   description = "ARN of the GitHub Actions OIDC IAM role"
   type        = string
 }
+
+variable "userarn" {
+  description = "ARN of the IAM user to map in aws-auth"
+  type        = string
+}
+
+
 # variable "desired_size" {}
 # varialbel "max_size" {}
