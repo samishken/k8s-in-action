@@ -36,3 +36,7 @@ node_modules/
 # Python cache (if using Python)
 __pycache__/
 *.pyc
+
+## Scripts used for connecting to EKS
+scripts/
+*.sh

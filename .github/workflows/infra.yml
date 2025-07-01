@@ -55,8 +55,22 @@ jobs:
           ls -ltr
 
       - name: Terraform Plan
-        run: terraform plan -var-file="${{ github.event.inputs.environment }}.tfvars"
+        env:
+          GITHUB_ACTIONS_OIDC_ROLE_ARN: ${{ secrets.ACTIONS_OIDC_ROLE_ARN }}
+          USERARN: ${{ secrets.USERARN }}
+        run: |
+          terraform plan -var-file="${{ github.event.inputs.environment }}.tfvars" \
+            -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN" \
+            -var="userarn=$USERARN"
 
       - name: Terraform Apply
         if: github.event_name == 'workflow_dispatch'
-        run: terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" -var-file="${{ github.event.inputs.environment }}.tfvars"
+        env:
+          GITHUB_ACTIONS_OIDC_ROLE_ARN: ${{ secrets.ACTIONS_OIDC_ROLE_ARN }}
+          USERARN: ${{ secrets.USERARN }}
+        run: |
+          terraform apply -auto-approve -var-file="${{ github.event.inputs.environment }}.tfvars" \
+            -var="github_actions_oidc_role_arn=$GITHUB_ACTIONS_OIDC_ROLE_ARN" \
+            -var="userarn=$USERARN"
+        
+      

@@ -15,6 +15,7 @@ module "common" {
   state_bucket                 = var.state_bucket
   env                          = var.env
   github_actions_oidc_role_arn = var.github_actions_oidc_role_arn
+  userarn                      = var.userarn
   node_groups = {
     k8s-in-action-ng = {
       instance_types = ["t3.large"]

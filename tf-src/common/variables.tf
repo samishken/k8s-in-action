@@ -71,3 +71,18 @@ variable "github_actions_oidc_role_arn" {
   description = "ARN of the GitHub Actions OIDC IAM role"
   type        = string
 }
+
+variable "userarn" {
+  description = "ARN of the IAM user to add to the EKS cluster"
+  type        = string
+}
+
+variable "map_users" {
+  description = "List of IAM users to add to aws-auth configmap"
+  type = list(object({
+    userarn  = string
+    username = string
+    groups   = list(string)
+  }))
+  default = []
+}
